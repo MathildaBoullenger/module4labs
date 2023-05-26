@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Animation</title>
+    <style>
+        .square {
+            animation-duration: 5s;
+            animation-name: slidedown;
+            animation-iteration-count: infinite;
+            width: 100px;
+            height: 100px;
+            margin: auto;
+        }
+        @keyframes slidedown {
+            from {
+                margin-top: 0%;
+                margin-bottom: 25%;
+                background-color: red;
+            }
+            to{
+                margin-top: 25%;
+                margin-bottom: 0%;
+                background-color: blue;
+            }
+        }
+
+    </style>
+
+</head>
+<body>
+ 
+<div class="square"></div>   
+</body>
+</html>

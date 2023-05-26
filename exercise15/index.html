@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.1/dist/echarts.min.js"></script>
+    </head>
+    <body>
+        <!-- Prepare a DOM with a defined width and height for ECharts -->
+        <div id="main" style="width: 900px; height: 600px;"></div>
+        <script type="text/javascript">
+            // get json placeholder data
+            fetch('https://fakestoreapi.com/products')
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data); // the output is called data instead of json()
+
+                function extractCategory(data) { 
+                    return data.map(item => item.category); // we iterate through and return the category foe each item
+                }
+
+                function categoryCount(data) {
+                    const countOb = {};
+                    data.forEach(item => {
+                        if (item.category in countOb) { //if the category of the item (item.category) is in the array (which it should),
+                            countOb[item.category]++; //then we increase the count of this category by 1
+                        } else {
+                            countOb[item.category] = 1; // otherwise we initialise the category
+                        }
+                    });
+
+                    const counts = Object.values(countOb); // we extract the counts out of the 'counts object' which consists of 
+                    //the names of the categories as keys and counts as values
+                    return counts;
+                }
+
+                const xAxisData = Array.from(new Set(extractCategory(data))); // here we create an array with the single categories 
+                const yAxisData = categoryCount(data); // and we also store both data sets for Axis x and Y in variables
+
+                // Initialise the echarts instance based on the prepared dom
+                var myChart = echarts.init(document.getElementById('main'));
+
+                // Specify the configuration items and data for the chart
+                var option = {
+                    title: {
+                        text: 'Number of Items by Category'
+                    },
+                    xAxis: {
+                        data: xAxisData
+                    },
+                    yAxis: {},
+                    series: [
+                        {
+                            name: 'posts',
+                            type: 'bar',
+                            data: yAxisData
+                        }
+                    ]
+                };
+
+                // Display the chart
+                myChart.setOption(option);
+            });
+
+        </script>
+    </body>
+</html>

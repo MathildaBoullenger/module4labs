@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background-color: #e3f2fd;
+            }
+        
+            #profile-card-list {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+        
+            .artist-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+        
+            .card {
+                max-width: 500px;
+            }
+        
+            .artist-name {
+                font-weight: 600;
+                font-size: 3em;
+                text-align: center;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+        
+            .card-description {
+                font-weight: 400;
+                font-size: 2em;
+            }
+        
+            .card-link {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        
+            .card-link img {
+                max-width: 100%;
+                height: auto;
+                margin: 5px;
+            }
+        
+            @media (max-width: 768px) {
+                .card {
+                    flex-basis: 50%;
+                }
+            }
+        
+            @media (max-width: 480px) {
+                .card {
+                    flex-basis: 100%;
+                }
+            }
+        </style>
+    </head>
+    
+
+<body>
+    <div id="artists-container"></div>
+
+    <template id="profile-card-template">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-description"></div>
+                <a class="card-link"></a>
+            </div>
+        </div>
+    </template>
+
+    <script>
+
+        const artists = [
+    {
+        name: "Van Gogh",
+        portfolio: [
+            {
+                title: "Portrait",
+                url: "https://collectionapi.metmuseum.org/api/collection/v1/iiif/436532/1671316/main-image"
+            },
+            {
+                title: "Sky",
+                url: "https://mymodernmet.com/wp/wp-content/uploads/2020/11/White-house-night-van-goh-worldwide-2.jpg"
+            },
+            {
+                title: "Irises",
+                url: "https://live.staticflickr.com/65535/51792724626_c7c6301817_b.jpg"
+            }
+        ]
+    },
+    {
+        name: "Frida Kahlo",
+        portfolio: [
+            {
+                title: "The Two Fridas",
+                url: "https://www.ladykflo.com/wp-content/uploads/2021/08/The-Two-Fridas-scaled.jpg"
+            },
+            {
+                title: "Self-Portrait with Thorn Necklace and Hummingbird",
+                url: "https://artincontext.org/wp-content/uploads/2022/08/Close-Up-of-Kahlos-Thorn-Necklace-Painting.jpg"
+            },
+            {
+                title: "Fruit of life",
+                url: "https://www.fridakahlo.org/images/paintings/fruit-of-life.jpg"
+            }
+        ]
+    }
+];
+
+
+function generateProfileCards(artists) {
+    const profileCardTemplate = document.getElementById("profile-card-template");
+    const artistsContainer = document.getElementById("artists-container");
+
+    artists.forEach((artist) => {
+        const artistContainer = document.createElement("div");
+        artistContainer.classList.add("artist-container");
+
+        const artistNameElement = document.createElement("div");
+        artistNameElement.classList.add("artist-name");
+        artistNameElement.innerText = artist.name;
+        artistContainer.appendChild(artistNameElement);
+
+        artist.portfolio.forEach((artwork) => {
+            const profileCard = profileCardTemplate.content.cloneNode(true);
+            profileCard.querySelector(".card-description").innerText = artwork.title;
+            profileCard.querySelector(".card-link").innerHTML = `<img src="${artwork.url}" alt="${artwork.title}" width="auto" height="500">`;
+            artistContainer.appendChild(profileCard);
+        });
+
+        artistsContainer.appendChild(artistContainer);
+    });
+}
+
+generateProfileCards(artists);
+
+</script>
+</body>
+</html>

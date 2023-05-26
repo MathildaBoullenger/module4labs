@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js"></script>
+        <title>Category Average Price Chart</title>
+    </head>
+    <body>
+        <div id="chart-container" style="width: 100%; height: 500px;"></div>
+
+        <script>
+            const chartContainer = document.getElementById('chart-container');
+            // here we just find the chart-container from the html and assign it to a value we can use in JavaScript
+
+            // below we fetch the data from the API
+            fetch('https://fakestoreapi.com/products').then(response => response.json()).then(data => {
+                // we rename the json() element to data
+
+                /*we create a new variable that is an object to store average price by category. 
+                It should look like {category1:averageprice, category2:averageprice,...}*/
+                const categoryAveragePrices = {};
+
+                // now we need to retrieve the data and fill our new object with it
+                data.forEach(item => { // we go through each item of the object data (this will be each product of our online store)
+                    let currentCategory = categoryAveragePrices[item.category];
+
+                    if (! currentCategory) { // we want to know if there is a value for each category (key) in our new object. The syntax looks something like this: 'NewObject[old product we fetched.key]'. If there is none: '!'
+                        currentCategory = { // this is executed if the value is undefined (or falsy). In this case, since there is no value yet, we assign one for the key item.category.
+                            total: 0, // we bascially 'initialise'
+                            count: 0 // a new category if it didn't exist
+                        };
+                        categoryAveragePrices[item.category] = currentCategory; // if it does exist, we just give it the value of the current category
+                    }currentCategory.total += item.price; // we are still in the for each loop now and for each item, we add its price to the total of the current category (initialised at 0)
+                    currentCategory.count ++; // for each item, we also increase the count of the current category
+                });
+
+                // now that we have the total of all prices in each category and the count of items in each category, we can calculate the average price for each category
+                // the object categoryAveragePrices has the following properties: each category and each category has the sub-properties: total and count
+                const categories = Object.keys(categoryAveragePrices); // we create a new array with this object's keys: categories
+                const averagePrices = categories.map(category => { // then we just have to calculate and map the average price for each of these categories
+                    const averagePrice = categoryAveragePrices[category].total / categoryAveragePrices[category].count; // this is done by simply calculating totalprice/countofitems for each category
+                    return {category, averagePrice}; // in the end, we return an object containing the categories and each of their average price
+                });
+
+                // here we sort the average prices in descending order
+                averagePrices.sort((a, b) => b.averagePrice - a.averagePrice);
+
+                // finally, we need to be able to use our categories on the x axis and the average price on the y axis to fetch the chart columns
+                const chartCategories = averagePrices.map(item => item.category);
+                // therefore we use map to extract the item category.
+                // Note: we don't need set or another manipulation to make the categories unique as they are originating from the averagePrice object which already conatins unique categories as keys
+                const chartData = averagePrices.map(item => item.averagePrice);
+                // here we follow the same principle to extract the price
+
+                // Create the chart using ECharts
+                const chart = echarts.init(chartContainer);
+                const options = {
+                    title: {
+                        text: 'Category Average Item Price'
+                    },
+                    tooltip: {},
+                    xAxis: {
+                        data: chartCategories // finally, we use our data thanks to the variables in which it is stored
+                    },
+                    yAxis: {},
+                    series: [
+                        {
+                            type: 'bar',
+                            data: chartData // finally, we use our data thanks to the variables in which it is stored
+                        }
+                    ]
+                };
+                chart.setOption(options); // this is used to display the data in the chart and needs to be included
+            }).catch(error => {
+                console.error('Error:', error); // all these manipulations are done if the promise is resolved, and are included in a 'then' element. if however, we encounter an error, we have this generic catch
+            });
+        </script>
+    </body>
+</html>
